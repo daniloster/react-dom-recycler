@@ -16,11 +16,8 @@ function getBoxBuffer(items, container, itemHeight, totalBufferMargin) {
     let start = 0;
     let end = 0;
     let totalSlicesElements = Math.ceil(totalElementInViewport + totalBufferMargin);
-    let paddingTop = 0;
-    let paddingBottom = 0;
     if (offTopView > totalBufferMargin) {
         start = offTopView - totalBufferMargin;
-        paddingTop = start * itemHeight;
     }
     const diffOffBottomView = totalItems - start - totalSlicesElements;
     if (diffOffBottomView > 0) {
@@ -29,14 +26,9 @@ function getBoxBuffer(items, container, itemHeight, totalBufferMargin) {
             : diffOffBottomView;
     }
     end = start + totalSlicesElements;
-    paddingBottom = (totalItems - end) * itemHeight;
     return {
         start,
-        end,
-        styles: {
-            paddingTop,
-            paddingBottom
-        }
+        end
     };
 }
 

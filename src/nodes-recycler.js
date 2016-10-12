@@ -16,7 +16,7 @@ import styles from './list-recycler.scss';
  * e.g. 1 means that we have 1 buffered before and 1 after;
  */
 
-class ListRecycler extends Component {
+class NodesRecycler extends Component {
     constructor(props) {
         super(props);
         this.onScroll = this.onScroll.bind(this);
@@ -34,7 +34,7 @@ class ListRecycler extends Component {
      */
     componentWillMount() {
         const {
-            items,
+            nodes,
             itemHeight,
             totalBufferMargin
         } = this.props;
@@ -42,7 +42,7 @@ class ListRecycler extends Component {
             start,
             end
         } = getBoxBuffer(
-            items,
+            nodes,
             {
                 offsetHeight: window.screen.height,
                 scrollTop: 0
@@ -63,7 +63,7 @@ class ListRecycler extends Component {
     onScroll(e) {
         const container = e.target;
         const {
-            items,
+            nodes,
             itemHeight,
             totalBufferMargin
         } = this.props;
@@ -71,7 +71,7 @@ class ListRecycler extends Component {
             start,
             end
         } = getBoxBuffer(
-            items,
+            nodes,
             container,
             itemHeight,
             totalBufferMargin);
@@ -84,8 +84,7 @@ class ListRecycler extends Component {
 
     render() {
         const {
-            ComponentItem,
-            items,
+            nodes,
             itemHeight
         } = this.props;
         const {
@@ -101,21 +100,18 @@ class ListRecycler extends Component {
                 <div
                     className={styles.contentRecycler}
                 >
-                    { items.slice(start, end).map((item, idx) => (
-                        <ComponentItem {...item} key={idx} />
-                    )) }
+                    { nodes.slice(start, end) }
                 </div>
-                <div style={{ height: (items.length - end) * itemHeight }} />
+                <div style={{ height: (nodes.length - end) * itemHeight }} />
             </div>
         );
     }
 }
 
-ListRecycler.propTypes = {
-    ComponentItem: PropTypes.elem,
-    items: PropTypes.arrayOf(PropTypes.object),
+NodesRecycler.propTypes = {
+    nodes: PropTypes.arrayOf(PropTypes.element),
     itemHeight: PropTypes.number,
     totalBufferMargin: PropTypes.number
 };
 
-export default ListRecycler;
+export default NodesRecycler;
