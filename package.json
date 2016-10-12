@@ -1,5 +1,5 @@
 {
-  "name": "react-list-recycler",
+  "name": "react-dom-recycler",
   "version": "1.0.0",
   "description": "npm module for recycling DOM element in react",
   "main": "index.js",

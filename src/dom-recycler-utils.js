@@ -24,16 +24,34 @@ function getBoxBuffer(items, container, itemHeight, totalBufferMargin) {
         totalSlicesElements += (diffOffBottomView > totalBufferMargin)
             ? totalBufferMargin
             : diffOffBottomView;
+        end = start + totalSlicesElements;
+    } else {
+        start = undefined;
+        end = totalItems;
     }
-    end = start + totalSlicesElements;
     return {
         start,
         end
     };
 }
 
+/**
+ * Verifies if both objects are the same at 1 level of depth
+ * @param object {object} - is the first object
+ * @param target {object} - is the second object
+ */
+function isObjectEquals(object, target) {
+    const objectMembers = Object.getOwnPropertyNames(object);
+    const targetMembers = Object.getOwnPropertyNames(target);
+    const isSameMember = ((name) => object[name] === target[name]);
+    return (objectMembers.join('|') === targetMembers.join('|')
+        && objectMembers.filter(isSameMember).length === targetMembers.length);
+}
+
 export { getBoxBuffer };
+export { isObjectEquals };
 
 export default {
-    getBoxBuffer
+    getBoxBuffer,
+    isObjectEquals
 };

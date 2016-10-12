@@ -1,20 +1,16 @@
 /* global document */
-import React, {
-    PropTypes
-} from 'react';
+import React from 'react';
 import { render } from 'react-dom';
 
-import ListRecycler from '../index';
-import NodesRecycler from '../src/nodes-recycler';
+import {
+    ListRecycler,
+    NodesRecycler
+} from '../index';
 import Comment from '../src/boilerplate/comment';
-
-const ComponentItem = (({ text }) => (<div>{text}</div>));
-ComponentItem.propTypes = {
-    text: PropTypes.string
-};
+import ComponentItem from '../src/boilerplate/component-item';
 
 const items = [];
-for (let idx = 0, len = 5000; idx < len; idx += 1) {
+for (let idx = 0, len = 500; idx < len; idx += 1) {
     items.push({
         author: `Author ${idx % 2 === 0 ? 'Even' : 'Odd'} ${idx}`,
         text: `Text ${idx % 2 === 0 ? 'Even' : 'Odd'} ${idx}`

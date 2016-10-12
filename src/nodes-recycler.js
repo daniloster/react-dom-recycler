@@ -4,9 +4,10 @@ import React, {
     Component
 } from 'react';
 import {
-    getBoxBuffer
-} from './list-recycler-utils';
-import styles from './list-recycler.scss';
+    getBoxBuffer,
+    isObjectEquals
+} from './dom-recycler-utils';
+import styles from './nodes-recycler.scss';
 /**
  * This component is responsible for recycling dom elements. Then, it requires
  * some initial data to perform it correctly.
@@ -56,6 +57,26 @@ class NodesRecycler extends Component {
     }
 
     /**
+     * Verifies whether the component should be re-rendered.
+     * @param nextProps {object} - represents the new props passed down
+     * @param nextState {object} - represents the new state applied
+     */
+    shouldComponentUpdate(nextProps, nextState) {
+        if (this.state === null || this.props === null) {
+            return true;
+        }
+        const {
+            nodes
+        } = this.props;
+        const isItemsEquals = nextProps.nodes.filter((item, idx) =>
+            isObjectEquals(item, nodes[idx])
+        ).length === nodes.length;
+        const isBoxBufferEquals = nextState.start === this.state.start
+            && nextState.end === this.state.end;
+        return !(isItemsEquals && isBoxBufferEquals);
+    }
+
+    /**
      * Handling the scroll event, doing math to find out the slice of the
      * elements based on start and end. Also, finds the padding required to
      * simulate that the elements hidden are in the container occuping space.
@@ -75,12 +96,14 @@ class NodesRecycler extends Component {
             container,
             itemHeight,
             totalBufferMargin);
-        this.setState({
-            start,
-            end
-        });
+        const isOutOfScope = (container.scrollTop > nodes.length * itemHeight);
+        if (!isOutOfScope && (start !== this.state.start || end !== this.state.end)) {
+            this.setState({
+                start: start > -1 ? start : this.state.start || 0,
+                end
+            });
+        }
     }
-
 
     render() {
         const {
