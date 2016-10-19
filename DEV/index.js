@@ -34,10 +34,11 @@ const AppDev = (() => (
         </div>
         <div style={{ height: 300 }}>
             <NodesRecycler
-                nodes={nodes}
                 itemHeight={65.92}
                 totalBufferMargin={10}
-            />
+            >
+                {nodes}
+            </NodesRecycler>
         </div>
     </div>
 ));

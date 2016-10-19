@@ -4,4 +4,4 @@ import NodesRecycler from './src/nodes-recycler';
 export { ListRecycler };
 export { NodesRecycler };
 
-export default ListRecycler;
+export default NodesRecycler;

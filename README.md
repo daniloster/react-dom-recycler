@@ -1,4 +1,4 @@
-# react-list-recycler
+# react-dom-recycler
 npm module for recycling DOM elements in reactjs.
 
 ## Motivation
@@ -10,11 +10,11 @@ need to define 2 rules:
 
 ## Consuming
 ### require
-var ReactListRecycler = require('react-list-recycler');
+var ReactDomRecycler = require('react-dom-recycler');
 ### es6
-import ReactListRecycler from 'react-list-recycler';
+import ReactDomRecycler from 'react-dom-recycler';
 ### global/window
-var ReactListRecycler = window.reactListRecycler;
+var ReactDomRecycler = window.reactDomRecycler;
 
 ### Scenario
 Scrolling is a decent and interesting context to improve performance. Usually we have scroll on pages cause we have a large amount 
@@ -30,7 +30,7 @@ scrolling 3 elements, we would have 9 elements being rendered there. It is prett
 
 
 Please, check out our DEV folder, you will find out a proper example. Once you install
-the react-list-recycler module, go to node_modules/react-list-recycler/DEV and have a look on index.js
+the react-dom-recycler module, go to node_modules/react-dom-recycler/DEV and have a look on index.js
 file.
 
 ## Usage example
@@ -42,7 +42,10 @@ import React, {
 } from 'react';
 import { render } from 'react-dom';
 
-import ListRecycler from 'react-list-recycler';
+import {
+    NodesRecycler,
+    ListRecycler
+} from 'react-dom-recycler';
 
 const ComponentItem = ({ text }) => (<div>{text}</div>);
 ComponentItem.propTypes = {
@@ -55,19 +58,35 @@ for (let idx = 0, len = 50000; idx < len; idx += 1) {
         text: `Text ${idx % 2 === 0 ? 'Even' : 'Odd'} ${idx}`
     });
 }
+const nodes = items.map(item => (<ComponentItem {...item} />));
 
 const root = document.querySelector('#root');
 root.setAttribute('style', 'height: 80px');
 
-render(
-    <ListRecycler
-        ComponentItem={ComponentItem}
-        items={items}
+const App = (() => (
+    <NodesRecycler
         itemHeight={18.4}
         totalBufferMargin={2}
-    />,
+    >
+        {nodes}
+    </NodesRecycler>
+));
+
+render(
+    <App />,
     root
 );
+
+// // or
+// render(
+//     <ListRecycler
+//         ComponentItem={ComponentItem}
+//         items={items}
+//         itemHeight={18.4}
+//         totalBufferMargin={2}
+//     />,
+//     root
+// );
 
 ```
 

@@ -4,8 +4,7 @@ import React, {
     Component
 } from 'react';
 import {
-    getBoxBuffer,
-    isObjectEquals
+    getBoxBuffer
 } from './dom-recycler-utils';
 import styles from './list-recycler.scss';
 /**
@@ -25,7 +24,7 @@ class ListRecycler extends Component {
 
     /**
      * At this point your component still do not know what is the
-     * element size cause it is about to render. Then, we are assume
+     * element size cause it is about to render. Then, we are assuming
      * the worst scenario where we have the whole page to display data.
      * In this case, we assume the container is the full page and do
      * the math based on the screen size, finding, then, the total number
@@ -39,21 +38,33 @@ class ListRecycler extends Component {
             itemHeight,
             totalBufferMargin
         } = this.props;
+        this.update({
+            offsetHeight: window.screen.height,
+            scrollTop: 0
+        },
+        items,
+        itemHeight,
+        totalBufferMargin);
+    }
+
+    /**
+     * At this point your component do not have the container reference so,
+     * it does not know what is the element size. Then, we are assuming
+     * the worst scenario where we have the whole page to display data.
+     */
+    componentWillReceiveProps(nextProps) {
         const {
-            start,
-            end
-        } = getBoxBuffer(
             items,
-            {
-                offsetHeight: window.screen.height,
-                scrollTop: 0
-            },
             itemHeight,
-            totalBufferMargin);
-        this.setState({
-            start,
-            end
-        });
+            totalBufferMargin
+        } = nextProps;
+        this.update({
+            offsetHeight: window.screen.height,
+            scrollTop: 0
+        },
+        items,
+        itemHeight,
+        totalBufferMargin);
     }
 
     /**
@@ -68,9 +79,7 @@ class ListRecycler extends Component {
         const {
             items
         } = this.props;
-        const isItemsEquals = nextProps.items.filter((item, idx) =>
-            isObjectEquals(item, items[idx])
-        ).length === items.length;
+        const isItemsEquals = items === nextProps.items;
         const isBoxBufferEquals = nextState.start === this.state.start
             && nextState.end === this.state.end;
         return !(isItemsEquals && isBoxBufferEquals);
@@ -82,12 +91,25 @@ class ListRecycler extends Component {
      * simulate that the elements hidden are in the container occuping space.
      */
     onScroll(e) {
-        const container = e.target;
         const {
             items,
             itemHeight,
             totalBufferMargin
         } = this.props;
+        this.update(e.target,
+        items,
+        itemHeight,
+        totalBufferMargin);
+    }
+
+    /**
+     * Updates the window sliding up and down when it is necessary.
+     * @param container {object} - represents an object with shape
+     * of { scrollTop: number, offsetHeight: number }
+     * @param props {object} - represents the properties that should
+     * contain the items, itemHeight and totalBufferMargin
+     */
+    update(container, items, itemHeight, totalBufferMargin) {
         const {
             start,
             end
@@ -96,10 +118,13 @@ class ListRecycler extends Component {
             container,
             itemHeight,
             totalBufferMargin);
+        const isWindow = container.tagName === undefined;
         const isOutOfScope = (container.scrollTop > items.length * itemHeight);
-        if (!isOutOfScope && (start !== this.state.start || end !== this.state.end)) {
+        const isValidScrollUpdate = isWindow || (!isOutOfScope
+            && ((start !== undefined && start !== this.state.start) || end !== this.state.end));
+        if (isValidScrollUpdate) {
             this.setState({
-                start: start > -1 ? start : this.state.start || 0,
+                start: start || 0,
                 end
             });
         }

@@ -1,11 +1,11 @@
 /* global document, window */
 import React, {
     PropTypes,
-    Component
+    Component,
+    Children
 } from 'react';
 import {
-    getBoxBuffer,
-    isObjectEquals
+    getBoxBuffer
 } from './dom-recycler-utils';
 import styles from './nodes-recycler.scss';
 /**
@@ -35,25 +35,46 @@ class NodesRecycler extends Component {
      */
     componentWillMount() {
         const {
-            nodes,
+            children,
             itemHeight,
             totalBufferMargin
         } = this.props;
-        const {
-            start,
-            end
-        } = getBoxBuffer(
-            nodes,
-            {
-                offsetHeight: window.screen.height,
-                scrollTop: 0
-            },
-            itemHeight,
-            totalBufferMargin);
+        const nodes = Children.toArray(children);
         this.setState({
-            start,
-            end
+            nodes
         });
+        this.update({
+            offsetHeight: window.screen.height,
+            scrollTop: 0
+        },
+        nodes,
+        itemHeight,
+        totalBufferMargin);
+    }
+
+    /**
+     * At this point your component do not have the container reference so,
+     * it does not know what is the element size. Then, we are assuming
+     * the worst scenario where we have the whole page to display data.
+     */
+    componentWillReceiveProps(nextProps) {
+        const {
+            children,
+            itemHeight,
+            totalBufferMargin
+        } = nextProps;
+        if (this.props.children !== children) {
+            this.setState({
+                nodes: Children.toArray(children)
+            });
+        }
+        this.update({
+            offsetHeight: window.screen.height,
+            scrollTop: 0
+        },
+        this.state.nodes,
+        itemHeight,
+        totalBufferMargin);
     }
 
     /**
@@ -66,11 +87,9 @@ class NodesRecycler extends Component {
             return true;
         }
         const {
-            nodes
+            children
         } = this.props;
-        const isItemsEquals = nextProps.nodes.filter((item, idx) =>
-            isObjectEquals(item, nodes[idx])
-        ).length === nodes.length;
+        const isItemsEquals = nextProps.children === children;
         const isBoxBufferEquals = nextState.start === this.state.start
             && nextState.end === this.state.end;
         return !(isItemsEquals && isBoxBufferEquals);
@@ -82,24 +101,39 @@ class NodesRecycler extends Component {
      * simulate that the elements hidden are in the container occuping space.
      */
     onScroll(e) {
-        const container = e.target;
         const {
-            nodes,
             itemHeight,
             totalBufferMargin
         } = this.props;
+        this.update(e.target,
+            this.state.nodes,
+            itemHeight,
+            totalBufferMargin);
+    }
+
+    /**
+     * Updates the window sliding up and down when it is necessary.
+     * @param container {object} - represents an object with shape
+     * of { scrollTop: number, offsetHeight: number }
+     * @param props {object} - represents the properties that should
+     * contain the items, itemHeight and totalBufferMargin
+     */
+    update(container, items, itemHeight, totalBufferMargin) {
         const {
             start,
             end
         } = getBoxBuffer(
-            nodes,
+            items,
             container,
             itemHeight,
             totalBufferMargin);
-        const isOutOfScope = (container.scrollTop > nodes.length * itemHeight);
-        if (!isOutOfScope && (start !== this.state.start || end !== this.state.end)) {
+        const isWindow = container.tagName === undefined;
+        const isOutOfScope = (container.scrollTop > items.length * itemHeight);
+        const isValidScrollUpdate = isWindow || (!isOutOfScope
+            && ((start !== undefined && start !== this.state.start) || end !== this.state.end));
+        if (isValidScrollUpdate) {
             this.setState({
-                start: start > -1 ? start : this.state.start || 0,
+                start: start || 0,
                 end
             });
         }
@@ -107,12 +141,12 @@ class NodesRecycler extends Component {
 
     render() {
         const {
-            nodes,
             itemHeight
         } = this.props;
         const {
             start,
-            end
+            end,
+            nodes
         } = this.state;
         return (
             <div
@@ -132,7 +166,10 @@ class NodesRecycler extends Component {
 }
 
 NodesRecycler.propTypes = {
-    nodes: PropTypes.arrayOf(PropTypes.element),
+    children: PropTypes.oneOfType([
+        PropTypes.arrayOf(PropTypes.node),
+        PropTypes.node
+    ]),
     itemHeight: PropTypes.number,
     totalBufferMargin: PropTypes.number
 };
