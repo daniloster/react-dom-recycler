@@ -44,10 +44,11 @@ const Document = (() => (
         </div>
         <div style={{ height: '80px' }} id='nodesRecycler'>
             <NodesRecycler
-                nodes={nodes}
                 itemHeight={18.4}
                 totalBufferMargin={2}
-            />
+            >
+                {nodes}
+            </NodesRecycler>
         </div>
     </div>
 ));
