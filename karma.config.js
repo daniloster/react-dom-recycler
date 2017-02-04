@@ -28,7 +28,7 @@ function initKarma(config) {
             ngRoute,
 
             { pattern: './src/.setup-test.js', watched: false },
-            { pattern: './**/*-test.js', watched: false }
+            { pattern: './src/**/*-test.js', watched: false }
         ],
         exclude: [
             './node_modules/**/*-test.js'

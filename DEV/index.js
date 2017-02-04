@@ -5,7 +5,7 @@ import { render } from 'react-dom';
 import {
     ListRecycler,
     NodesRecycler
-} from '../index';
+} from '../src';
 import Comment from '../src/boilerplate/comment';
 import ComponentItem from '../src/boilerplate/component-item';
 

@@ -12,7 +12,7 @@ import TestUtils from 'react-addons-test-utils';
 import {
     ListRecycler,
     NodesRecycler
-} from '../index';
+} from './index';
 import ComponentItem from './boilerplate/component-item';
 
 const items = [];

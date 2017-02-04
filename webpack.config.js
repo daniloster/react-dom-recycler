@@ -137,7 +137,7 @@ if (isTest) {
     webpackConfig.entry = {
         [package.name]: [
             require.resolve('babel-polyfill'),
-            isDev ? './DEV/index.js' : './index.js'
+            isDev ? './DEV/index.js' : './src/index.js'
         ]
     };
     webpackConfig.output = {

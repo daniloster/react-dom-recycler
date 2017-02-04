@@ -2,14 +2,18 @@
   "name": "react-dom-recycler",
   "version": "1.0.0",
   "description": "npm module for recycling DOM element in react",
-  "main": "index.js",
+  "main": "lib/index.js",
   "browser" : {
     "fs":      false
   },
   "scripts": {
     "test": "NODE_ENV=test karma start karma.config.js --single-run --no-auto-watch",
+    "clean": "rm -rf lib && mkdir lib",
+    "precompile": "npm run clean",
+    "compile": "babel src --out-dir lib --copy-files --source-maps --presets=es2015,react,stage-0 --plugins=transform-es2015-modules-umd",
     "build": "NODE_ENV=production webpack --config webpack.config.js",
     "start": "NODE_ENV=dev webpack-dev-server --content-base dist --hot --inline"
+
   },
   "repository": {
     "type": "git",

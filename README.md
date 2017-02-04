@@ -72,6 +72,16 @@ const App = (() => (
     </NodesRecycler>
 ));
 
+// Another option
+// const App = (() => (
+//     <NodesRecycler
+//         itemHeight={18.4}
+//         totalBufferMargin={2}
+//     >
+//         {items.map((item, idx) => (<ComponentItem key={`item-${idx}`} {...item} />))}
+//     </NodesRecycler>
+// ));
+
 render(
     <App />,
     root
